@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قاموس عربي - Arabic Dictionary</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #1a2a6c);
+            padding: 20px;
+            direction: rtl;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+            padding: 30px;
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        h1 {
+            color: white;
+            font-size: 2.4rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        h1 i {
+            color: gold;
+            font-size: 2rem;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        
+        .selectors-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 30px 0;
+            gap: 20px;
+        }
+        
+        .selector {
+            flex: 1;
+            position: relative;
+            height: 280px;
+            overflow: hidden;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2), 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .selector:hover {
+            transform: translateY(-5px);
+        }
+        
+        .selector::before, .selector::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            z-index: 2;
+            pointer-events: none;
+        }
+        
+        .selector::before {
+            top: 0;
+            background: linear-gradient(to bottom, rgba(26, 42, 108, 0.9), transparent);
+        }
+        
+        .selector::after {
+            bottom: 0;
+            background: linear-gradient(to top, rgba(26, 42, 108, 0.9), transparent);
+        }
+        
+        .letters-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+            padding: 100px 0;
+            overflow-y: scroll;
+            scrollbar-width: none;
+            scroll-behavior: smooth;
+        }
+        
+        .letters-container::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .letter {
+            font-size: 2.8rem;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 80px;
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+            user-select: none;
+            font-weight: bold;
+        }
+        
+        .letter.selected {
+            font-size: 3.5rem;
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.9);
+            transform: scale(1.2);
+            z-index: 10;
+            position: relative;
+        }
+        
+        .selector-label {
+            position: absolute;
+            top: 15px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.2rem;
+            z-index: 3;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+            font-weight: bold;
+        }
+        
+        .center-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, transparent, gold, transparent);
+            transform: translateY(-50%);
+            z-index: 1;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+        }
+        
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, #4A00E0, #8E2DE2);
+            color: white;
+            border: none;
+            padding: 16px 35px;
+            font-size: 1.3rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            font-weight: bold;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(to right, #5a1aee, #9d3df2);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(to right, #1a2a6c, #4a6fc9);
+        }
+        
+        .result-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .result-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        .result-word {
+            font-size: 3.8rem;
+            color: white;
+            font-weight: bold;
+            letter-spacing: 5px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            min-height: 80px;
+            margin: 10px 0;
+            padding: 5px 30px;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .dictionary-results {
+            width: 100%;
+            margin-top: 25px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        
+        .dictionary-results h3 {
+            color: white;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 1.4rem;
+        }
+        
+        .word-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 15px;
+        }
+        
+        .word-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 1.3rem;
+            color: white;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .word-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .instructions {
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 30px;
+            font-size: 1rem;
+            line-height: 1.7;
+            background: rgba(0, 0, 0, 0.15);
+            padding: 20px;
+            border-radius: 15px;
+        }
+        
+        .instructions h3 {
+            color: gold;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .instructions ul {
+            padding-right: 20px;
+            margin-top: 10px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .footer {
+            margin-top: 25px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .highlight {
+            color: gold;
+            font-weight: bold;
+        }
+        
+        /* Animation for word selection */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .pulse {
+            animation: pulse 0.5s ease;
+        }
+        
+        /* Decorative elements */
+        .decoration {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.05);
+            font-size: 8rem;
+            z-index: 0;
+        }
+        
+        .dec-1 {
+            top: 20px;
+            left: 30px;
+        }
+        
+        .dec-2 {
+            bottom: 20px;
+            right: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 15px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .selectors-container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .selector {
+                height: 200px;
+            }
+            
+            .letter {
+                font-size: 2.2rem;
+                height: 60px;
+                width: 60px;
+            }
+            
+            .letter.selected {
+                font-size: 2.8rem;
+            }
+            
+            .result-word {
+                font-size: 2.8rem;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Decorative elements -->
+        <div class="decoration dec-1">ﻉ</div>
+        <div class="decoration dec-2">ﺏ</div>
+        
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-book-quran"></i>
+            </div>
+            <h1><i class="fas fa-book"></i> قاموس عربي - Arabic Dictionary</h1>
+        </div>
+        
+        <div class="selectors-container">
+            <div class="selector">
+                <div class="selector-label">الحرف الأول</div>
+                <div class="center-line"></div>
+                <div class="letters-container" id="selector1">
+                    <!-- Letters will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="selector">
+                <div class="selector-label">الحرف الثاني</div>
+                <div class="center-line"></div>
+                <div class="letters-container" id="selector2">
+                    <!-- Letters will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="selector">
+                <div class="selector-label">الحرف الثالث</div>
+                <div class="center-line"></div>
+                <div class="letters-container" id="selector3">
+                    <!-- Letters will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="btn-container">
+            <button class="btn" id="searchBtn">
+                <i class="fas fa-search"></i> بحث - Search
+            </button>
+            <button class="btn btn-secondary" id="resetBtn">
+                <i class="fas fa-redo"></i> إعادة تعيين
+            </button>
+        </div>
+        
+        <div class="result-container">
+            <div class="result-label">الكلمة المحددة:</div>
+            <div class="result-word" id="resultWord">رحم</div>
+            
+            <div class="dictionary-results">
+                <h3><i class="fas fa-list"></i> كلمات تبدأ بهذه الأحرف:</h3>
+                <div class="word-list" id="wordList">
+                    <!-- Dictionary results will be populated here -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> طريقة الاستخدام:</h3>
+            <p>استخدم الأعمدة الثلاثة لتحديد الحروف العربية التي تريد البحث عنها. قم بالتمرير لاختيار الحرف الأول، الثاني والثالث. عند الضغط على زر "بحث"، ستظهر الكلمة المكونة من الحروف المحددة مع قائمة بالكلمات التي تبدأ بهذه الأحرف.</p>
+            <ul>
+                <li>الحرف المحدد سيظهر بوضوح في منتصف العمود مع تأثير مضيء</li>
+                <li>اضغط على أي كلمة في القائمة لاستخدامها</li>
+                <li>استخدم زر "إعادة تعيين" لبدء بحث جديد</li>
+            </ul>
+        </div>
+        
+        <div class="footer">
+            قاموس عربي تفاعلي - تم التطوير باستخدام HTML, CSS و JavaScript
+        </div>
+    </div>
+
+    <script>
+        // Arabic letters from ا to ي
+        const arabicLetters = [
+            'ا', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش',
+            'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن', 'ه', 'و', 'ي'
+        ];
+        
+        // Arabic dictionary words for demonstration
+        const arabicDictionary = {
+            "رحم": ["رحمة", "راحم", "مرحوم", "تراحم", "رحماء"],
+            "كتاب": ["كاتب", "مكتب", "مكتبة", "كتابة", "كتابي"],
+            "علم": ["عالم", "معلم", "تعليم", "متعلم", "علامة"],
+            "حب": ["حبيب", "محبوب", "تحبيب", "محبة", "أحباب"],
+            "بيت": ["بيتي", "مبيت", "بيوت", "بيتين", "بيتية"],
+            "شمس": ["شمسي", "مشمس", "شمسية", "تشمس", "شوامس"],
+            "قمر": ["قمري", "مقمر", "أقمار", "قمرة", "قمريات"],
+            "بحر": ["بحري", "بحرية", "بحار", "بحران", "بحيرة"],
+            "شجر": ["شجري", "مشجر", "أشجار", "شجرة", "تشجير"],
+            "ورد": ["وردة", "وردي", "أزهار", "ورود", "تورد"],
+            "نور": ["نوري", "منور", "أنوار", "نوران", "تنوير"],
+            "كرم": ["كريم", "مكرم", "أكرم", "كرمة", "تكريم"],
+            "عدل": ["عادل", "عدلي", "عدالة", "معادلة", "تعديل"],
+            "حلم": ["حالم", "محلم", "أحلام", "حلمي", "تحلم"],
+            "جمل": ["جميل", "جمال", "أجمل", "جملة", "تجمل"],
+            "خير": ["خيّر", "مخير", "خيرات", "خيرة", "تخير"],
+            "صبر": ["صابر", "مصبر", "صبار", "صبرة", "تصبر"],
+            "فكر": ["فكري", "مفكر", "أفكار", "فكرة", "تفكير"],
+            "شكر": ["شاكر", "مشكور", "شكرا", "شكرية", "تشكر"],
+            "حمد": ["حامد", "محمود", "محمد", "حمدان", "تحمد"],
+            "سعد": ["سعيد", "مسعود", "أسعد", "سعادة", "تسعد"],
+            "جهد": ["مجتهد", "جهاد", "اجتهاد", "جهيد", "تجهد"],
+            "عمل": ["عامِل", "مُعمل", "أعمال", "عملة", "تعمل"],
+            "كلم": ["كلام", "متكلم", "كلمة", "تكلم", "مكالمة"],
+            "دين": ["ديني", "مدين", "أديان", "دينة", "تدين"]
+        };
+        
+        // Initialize selectors
+        const selector1 = document.getElementById('selector1');
+        const selector2 = document.getElementById('selector2');
+        const selector3 = document.getElementById('selector3');
+        const searchBtn = document.getElementById('searchBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const resultWord = document.getElementById('resultWord');
+        const wordList = document.getElementById('wordList');
+        
+        // Function to populate a selector with letters
+        function populateSelector(selector, selectedIndex) {
+            // Add extra letters at the beginning and end for smoother scrolling
+            for (let i = 0; i < 5; i++) {
+                const dummyLetter = document.createElement('div');
+                dummyLetter.className = 'letter';
+                dummyLetter.textContent = ' ';
+                selector.appendChild(dummyLetter);
+            }
+            
+            // Add actual letters
+            arabicLetters.forEach((letter, index) => {
+                const letterElement = document.createElement('div');
+                letterElement.className = 'letter';
+                if (index === selectedIndex) {
+                    letterElement.classList.add('selected');
+                }
+                letterElement.textContent = letter;
+                letterElement.dataset.index = index;
+                selector.appendChild(letterElement);
+            });
+            
+            // Add extra letters at the end
+            for (let i = 0; i < 5; i++) {
+                const dummyLetter = document.createElement('div');
+                dummyLetter.className = 'letter';
+                dummyLetter.textContent = ' ';
+                selector.appendChild(dummyLetter);
+            }
+            
+            // Set initial scroll position to center on the selected letter
+            setTimeout(() => {
+                const letters = selector.querySelectorAll('.letter');
+                if (letters.length > selectedIndex + 5) {
+                    const selectedElement = letters[selectedIndex + 5];
+                    selector.scrollTop = selectedElement.offsetTop - selector.offsetHeight/2 + selectedElement.offsetHeight/2;
+                }
+            }, 10);
+        }
+        
+        // Function to update the selected letter based on scroll position
+        function updateSelectedLetter(selector) {
+            const letters = selector.querySelectorAll('.letter');
+            const containerHeight = selector.offsetHeight;
+            const scrollPosition = selector.scrollTop + containerHeight / 2;
+            
+            let closestLetter = null;
+            let closestDistance = Infinity;
+            
+            letters.forEach(letter => {
+                if (letter.textContent.trim() === '') return; // Skip empty dummy letters
+                
+                const letterPosition = letter.offsetTop + letter.offsetHeight / 2;
+                const distance = Math.abs(letterPosition - scrollPosition);
+                
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestLetter = letter;
+                }
+                
+                letter.classList.remove('selected');
+            });
+            
+            if (closestLetter) {
+                closestLetter.classList.add('selected');
+            }
+        }
+        
+        // Function to get the currently selected letter from a selector
+        function getSelectedLetter(selector) {
+            const selected = selector.querySelector('.letter.selected');
+            return selected ? selected.textContent.trim() : '';
+        }
+        
+        // Function to update the result word
+        function updateResultWord() {
+            const letter1 = getSelectedLetter(selector1);
+            const letter2 = getSelectedLetter(selector2);
+            const letter3 = getSelectedLetter(selector3);
+            
+            if (letter1 && letter2 && letter3) {
+                resultWord.textContent = letter1 + letter2 + letter3;
+            }
+        }
+        
+        // Function to show dictionary results
+        function showDictionaryResults(word) {
+            wordList.innerHTML = '';
+            
+            if (arabicDictionary[word]) {
+                arabicDictionary[word].forEach(item => {
+                    const wordItem = document.createElement('div');
+                    wordItem.className = 'word-item';
+                    wordItem.textContent = item;
+                    wordItem.addEventListener('click', () => {
+                        resultWord.textContent = item;
+                        resultWord.classList.add('pulse');
+                        setTimeout(() => resultWord.classList.remove('pulse'), 500);
+                    });
+                    wordList.appendChild(wordItem);
+                });
+            } else {
+                const noResults = document.createElement('div');
+                noResults.className = 'word-item';
+                noResults.textContent = 'لا توجد نتائج';
+                noResults.style.gridColumn = '1 / -1';
+                wordList.appendChild(noResults);
+            }
+        }
+        
+        // Initialize selectors with default selections (ر, ح, م)
+        populateSelector(selector1, 9); // ر is at index 9
+        populateSelector(selector2, 5); // ح is at index 5
+        populateSelector(selector3, 23); // م is at index 23
+        
+        // Set up scroll event listeners
+        [selector1, selector2, selector3].forEach(selector => {
+            selector.addEventListener('scroll', () => {
+                updateSelectedLetter(selector);
+                updateResultWord();
+            });
+        });
+        
+        // Search button functionality
+        searchBtn.addEventListener('click', () => {
+            const letter1 = getSelectedLetter(selector1);
+            const letter2 = getSelectedLetter(selector2);
+            const letter3 = getSelectedLetter(selector3);
+            
+            if (letter1 && letter2 && letter3) {
+                const word = letter1 + letter2 + letter3;
+                showDictionaryResults(word);
+                resultWord.classList.add('pulse');
+                setTimeout(() => resultWord.classList.remove('pulse'), 500);
+            } else {
+                wordList.innerHTML = '<div class="word-item" style="grid-column:1/-1">الرجاء اختيار ثلاثة حروف</div>';
+            }
+        });
+        
+        // Reset button functionality
+        resetBtn.addEventListener('click', () => {
+            // Reset scroll positions and selections
+            const resetSelection = (selector, index) => {
+                selector.innerHTML = '';
+                populateSelector(selector, index);
+                selector.scrollTop = 0;
+            };
+            
+            resetSelection(selector1, 9);
+            resetSelection(selector2, 5);
+            resetSelection(selector3, 23);
+            
+            // Reset result word
+            resultWord.textContent = 'رحم';
+            
+            // Clear dictionary results
+            wordList.innerHTML = '<div class="word-item" style="grid-column:1/-1">اختر الأحرف ثم اضغط بحث</div>';
+        });
+        
+        // Add scroll momentum for mobile devices
+        let isScrolling;
+        [selector1, selector2, selector3].forEach(selector => {
+            selector.addEventListener('scroll', () => {
+                // Clear our timeout throughout the scroll
+                window.clearTimeout(isScrolling);
+                
+                // Set a timeout to run after scrolling ends
+                isScrolling = setTimeout(() => {
+                    // Center the closest letter after scrolling stops
+                    updateSelectedLetter(selector);
+                    updateResultWord();
+                    
+                    // Smoothly center the selected letter
+                    const selected = selector.querySelector('.letter.selected');
+                    if (selected) {
+                        const scrollTo = selected.offsetTop - selector.offsetHeight/2 + selected.offsetHeight/2;
+                        
+                        selector.scrollTo({
+                            top: scrollTo,
+                            behavior: 'smooth'
+                        });
+                    }
+                }, 100);
+            });
+        });
+        
+        // Initialize the word list
+        wordList.innerHTML = '<div class="word-item" style="grid-column:1/-1">اختر الأحرف ثم اضغط بحث</div>';
+    </script>
+</body>
+</html>
